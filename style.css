@@ -1,0 +1,921 @@
+/* ==========================================================================
+   VINTAGE JAZZ DRUMS - FIRST-PERSON PERSPECTIVE (POV) STYLESHEET
+   Jazz Club Atmosphere • 2.5D Drum Kit • Animated Drumsticks • Brass & Mahogany
+   ========================================================================== */
+
+:root {
+  --bg-dark: #0e0a07;
+  --bg-wood-dark: #19120c;
+  --brass-gold: #d4af37;
+  --brass-light: #f3d478;
+  --brass-dark: #8c6a18;
+  --amber-glow: #f5a623;
+  --warm-orange: #d96814;
+  --mahogany-shell: #4a1d0a;
+  --parchment-head: #f7efe1;
+  --parchment-shadow: #d8c6aa;
+  
+  --font-title: 'Cinzel', serif;
+  --font-main: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --radius-lg: 16px;
+  --radius-md: 10px;
+}
+
+/* Reset y caja base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg-dark);
+  color: #f5edd8;
+  font-family: var(--font-main);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  position: relative;
+  padding: 16px 12px;
+}
+
+/* ==========================================================================
+   ATMÓSFERA JAZZ CLUB: SPOTLIGHTS Y LUCES TENUES
+   ========================================================================== */
+.stage-spotlight {
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 900px;
+  background: radial-gradient(circle, rgba(245, 175, 45, 0.16) 0%, rgba(212, 107, 8, 0.05) 50%, transparent 75%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.stage-ambient-warmth {
+  position: fixed;
+  bottom: -10%;
+  left: 30%;
+  width: 700px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(168, 67, 10, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(80px);
+}
+
+.stage-vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(10, 6, 4, 0.85) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Contenedor Principal */
+.app-container {
+  width: 100%;
+  max-width: 1180px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Paneles de Latón / Vintage Brass Panels */
+.brass-panel {
+  background: linear-gradient(180deg, rgba(38, 26, 18, 0.85) 0%, rgba(24, 16, 10, 0.92) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(243, 212, 120, 0.25);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.brass-panel-inset {
+  background: rgba(16, 10, 6, 0.75);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+  border-radius: var(--radius-md);
+}
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+.app-header {
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4af37 0%, #73500d 100%);
+  border: 2px solid #f3d478;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1005;
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.4);
+}
+
+.brand-badge svg {
+  width: 22px;
+  height: 22px;
+}
+
+.brand-title {
+  font-family: var(--font-title);
+  font-size: 1.45rem;
+  letter-spacing: 0.12em;
+  color: #fdf5e2;
+  font-weight: 800;
+}
+
+.gold-text {
+  background: linear-gradient(135deg, #f5d77f 0%, #d4af37 50%, #997316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-subtitle {
+  font-size: 0.78rem;
+  color: #bfa382;
+  font-weight: 500;
+}
+
+/* Visualizador de Audio Ámbar */
+.header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visualizer-wrapper {
+  padding: 5px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#audioVisualizer {
+  display: block;
+  border-radius: 4px;
+}
+
+.visualizer-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.16em;
+  color: #8c7356;
+  margin-top: 2px;
+}
+
+/* Controles de Volumen */
+.header-controls {
+  display: flex;
+  align-items: center;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+}
+
+.control-label {
+  font-size: 0.95rem;
+}
+
+.volume-value {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: #e5cfb0;
+  font-weight: 600;
+  min-width: 38px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 90px;
+  height: 5px;
+  background: rgba(212, 175, 55, 0.2);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #d4af37;
+  box-shadow: 0 0 8px #d4af37;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #d4af37;
+  box-shadow: 0 0 8px #d4af37;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
+/* Barra de Estado Vintage */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 14px;
+  font-size: 0.82rem;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-bulb {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f5a623;
+  box-shadow: 0 0 10px #f5a623;
+  animation: bulb-pulse 2.2s infinite ease-in-out;
+}
+
+@keyframes bulb-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+
+.latency-btn {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #f3d478;
+  font-family: var(--font-main);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.latency-btn:hover,
+.latency-btn.active {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: #d4af37;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.last-hit-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(30, 20, 12, 0.6);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.last-hit-label {
+  font-size: 0.72rem;
+  color: #998064;
+}
+
+.last-hit-name {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #f5d77f;
+}
+
+/* ==========================================================================
+   ESCENARIO POV DEL BATERISTA (FIRST-PERSON VIEW 2.5D LAYOUT)
+   ========================================================================== */
+.pov-stage {
+  position: relative;
+  width: 100%;
+  height: 580px;
+  background: radial-gradient(ellipse at 50% 65%, #22170f 0%, #150e09 50%, #0a0604 100%);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 80px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  perspective: 1100px;
+}
+
+/* Suelo de tarima de madera en perspectiva */
+.stage-floor {
+  position: absolute;
+  inset: 0;
+  background: 
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.2) 0px, transparent 1px, transparent 60px, rgba(0, 0, 0, 0.2) 61px),
+    linear-gradient(180deg, rgba(20, 12, 8, 0.9) 0%, rgba(35, 22, 14, 0.6) 50%, rgba(45, 28, 18, 0.8) 100%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Disposición espacial de la batería en arco */
+.drum-kit-layout {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(15deg);
+  transform-style: preserve-3d;
+}
+
+/* Estilo base de todas las piezas (Pads POV) */
+.drum-piece {
+  position: absolute;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.08s ease, filter 0.08s ease, box-shadow 0.08s ease;
+  will-change: transform, filter, box-shadow;
+}
+
+/* Efecto de impacto / golpe físico */
+.drum-piece.hit {
+  transform: scale(0.94) translateY(6px) !important;
+  filter: brightness(1.25);
+  box-shadow: 0 0 45px var(--hit-glow), 0 0 80px rgba(212, 140, 20, 0.5), inset 0 0 25px rgba(255, 215, 100, 0.4) !important;
+}
+
+.drum-piece:hover {
+  filter: brightness(1.1);
+}
+
+/* ==========================================================================
+   PLATILLOS DE LATÓN / BRONCE (CYMBALS)
+   ========================================================================== */
+.cymbal {
+  background: 
+    radial-gradient(circle at 50% 50%, #f7d277 0%, #e0ab41 22%, #a8721c 50%, #d89f36 75%, #66410d 100%);
+  border: 2px solid #eec45f;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(255, 235, 150, 0.35);
+}
+
+/* Campana central del platillo */
+.cymbal-bell {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #fff2b8 0%, #d89f36 60%, #633a05 100%);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.big-bell {
+  width: 38px;
+  height: 38px;
+}
+
+/* Surcos torneados del platillo */
+.cymbal-ridges {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 240, 180, 0.35);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   TAMBORES CON CUERPO DE CAOBA Y PARCHE CREMA (DRUMS)
+   ========================================================================== */
+.drum-drum {
+  background: #140d08;
+}
+
+/* Aro de tensión metálico de latón */
+.drum-hoop {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  padding: 10px;
+  background: linear-gradient(145deg, #d4af37 0%, #69490e 50%, #f3d478 100%);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.75), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Parche de piel / pergamino crema */
+.drum-head {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fbf5e9 0%, #ece0ca 60%, #cdba99 100%);
+  border: 1px solid #b89f78;
+  box-shadow: inset 0 6px 14px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Logotipo / Insignia vintage en el parche */
+.drum-badge-vintage {
+  font-family: var(--font-title);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: #7d6549;
+  font-weight: 700;
+  opacity: 0.8;
+  border-top: 1px solid #aa9072;
+  border-bottom: 1px solid #aa9072;
+  padding: 1px 6px;
+}
+
+/* ==========================================================================
+   POSICIONAMIENTO ESPACIAL DEL KIT EN PERSPECTIVA
+   ========================================================================== */
+
+/* 1. CRASH CYMBAL (Arriba Izquierda) */
+.crash-cymbal {
+  width: 160px;
+  height: 140px;
+  top: 30px;
+  left: 60px;
+  transform: rotate(-10deg);
+}
+
+/* 2. HI-HAT CERRADO (Lateral Izquierdo) */
+.hihat-closed-cymbal {
+  width: 140px;
+  height: 125px;
+  top: 180px;
+  left: 40px;
+  transform: rotate(-6deg);
+}
+
+/* 3. HI-HAT ABIERTO (Al lado del Hi-Hat cerrado) */
+.hihat-open-cymbal {
+  width: 110px;
+  height: 98px;
+  top: 130px;
+  left: 175px;
+  opacity: 0.95;
+  transform: rotate(4deg);
+}
+
+/* 4. HIGH TOM (Centro Superior sobre el Bombo) */
+.tom-high-drum {
+  width: 155px;
+  height: 140px;
+  top: 75px;
+  left: 385px;
+  transform: rotate(-3deg);
+}
+
+/* 5. RIDE CYMBAL (Arriba Derecha - Gran platillo) */
+.ride-cymbal {
+  width: 195px;
+  height: 170px;
+  top: 40px;
+  right: 60px;
+  transform: rotate(12deg);
+}
+
+/* 6. BOMBO / BASS DRUM (Centro Fondo) */
+.kick-drum {
+  width: 250px;
+  height: 230px;
+  top: 170px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.kick-wood-hoop {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  padding: 14px;
+  background: 
+    radial-gradient(circle, #52220b 0%, #290f03 100%),
+    linear-gradient(135deg, #d4af37 0%, #4a2108 50%, #d4af37 100%);
+  border: 3px solid #b8912e;
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kick-head {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #f7edd8 0%, #e2d1b0 65%, #c2ac84 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 10px 25px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+
+.kick-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #573e22;
+  text-align: center;
+}
+
+.logo-main {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  border-top: 1.5px solid #73532f;
+  border-bottom: 1.5px solid #73532f;
+  padding: 2px 8px;
+  margin: 3px 0;
+}
+
+.logo-sub {
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+/* PEDAL DE BOMBO VISUAL */
+.kick-pedal-mechanism {
+  position: absolute;
+  bottom: -45px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  z-index: 5;
+}
+
+.pedal-beater {
+  width: 18px;
+  height: 24px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #d9d2c5 0%, #877f72 100%);
+  border: 1px solid #4a3728;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  transform-origin: bottom center;
+  transition: transform 0.08s ease;
+}
+
+.pedal-footboard {
+  width: 52px;
+  height: 55px;
+  background: linear-gradient(180deg, #59534c 0%, #29241e 100%);
+  border: 2px solid #8c764e;
+  border-radius: 6px 6px 12px 12px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.8);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: bottom center;
+  transition: transform 0.08s ease;
+}
+
+.pedal-grooves {
+  width: 70%;
+  height: 60%;
+  border-top: 2px solid #a8946e;
+  border-bottom: 2px solid #a8946e;
+}
+
+/* Golpe de pedal activo */
+.kick-drum.hit .pedal-beater {
+  transform: scaleY(0.7) translateY(-8px);
+}
+
+.kick-drum.hit .pedal-footboard {
+  transform: rotateX(25deg) scaleY(0.9);
+}
+
+/* 7. CAJA / SNARE DRUM (Centro Abajo - En primer plano) */
+.snare-drum {
+  width: 205px;
+  height: 185px;
+  bottom: 25px;
+  left: 280px;
+  z-index: 3;
+}
+
+.snare-hoop {
+  padding: 11px;
+  background: linear-gradient(145deg, #f3d478 0%, #aa841c 50%, #422f08 100%);
+  border: 2px solid #ecd38c;
+}
+
+.snare-head {
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #ede3d2 65%, #c5b59a 100%);
+}
+
+.snare-center-ring {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1px dashed rgba(120, 95, 65, 0.35);
+  pointer-events: none;
+}
+
+/* 8. FLOOR TOM (Derecha Abajo) */
+.tom-low-drum {
+  width: 215px;
+  height: 195px;
+  bottom: 40px;
+  right: 170px;
+  z-index: 2;
+  transform: rotate(5deg);
+}
+
+/* ==========================================================================
+   ETIQUETAS & KEY BADGES EN LAS PIEZAS
+   ========================================================================== */
+.piece-label {
+  position: absolute;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(22, 14, 8, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 2px 7px;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.kick-label {
+  bottom: 30px;
+}
+
+.label-name {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #dfcdb3;
+}
+
+.key-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #1a1005;
+  background: linear-gradient(135deg, #f7d277 0%, #cf9c27 100%);
+  border: 1px solid #fff;
+  border-radius: 4px;
+  padding: 1px 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.kick-keys {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.key-divider {
+  font-size: 0.6rem;
+  color: #9c8466;
+}
+
+/* ==========================================================================
+   BAQUETAS FLOTANTES POV (DRUMSTICKS LAYER)
+   ========================================================================== */
+.drumsticks-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.drumstick {
+  position: absolute;
+  bottom: -40px;
+  width: 14px;
+  height: 290px;
+  transform-origin: bottom center;
+  transition: transform 0.08s cubic-bezier(0.1, 0.9, 0.2, 1);
+  will-change: transform;
+}
+
+/* Cuerpo de madera de Nogal / Hickory */
+.stick-shaft {
+  width: 100%;
+  height: 210px;
+  background: linear-gradient(90deg, #d6b280 0%, #f7dfbe 45%, #c99f6b 100%);
+  border-radius: 0 0 5px 5px;
+  box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+.stick-shoulder {
+  width: 100%;
+  height: 55px;
+  background: linear-gradient(90deg, #d6b280 0%, #f7dfbe 45%, #c99f6b 100%);
+  clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+}
+
+.stick-tip {
+  width: 10px;
+  height: 18px;
+  margin: 0 auto;
+  border-radius: 50% 50% 40% 40%;
+  background: radial-gradient(circle at 40% 35%, #fff1db 0%, #e0bd8b 70%, #9e794c 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.stick-butt {
+  width: 100%;
+  height: 20px;
+  background: linear-gradient(90deg, #ad8653 0%, #e8c79b 50%, #946f3e 100%);
+  border-radius: 0 0 6px 6px;
+}
+
+/* Baqueta Izquierda (Orientada a la caja y platillos izquierdos) */
+.left-stick {
+  left: 260px;
+  transform: rotate(26deg);
+}
+
+/* Baqueta Derecha (Orientada a toms, platillo ride y crash) */
+.right-stick {
+  right: 280px;
+  transform: rotate(-26deg);
+}
+
+/* --------------------------------------------------------------------------
+   ANIMACIONES DE GOLPE DE BAQUETA (DOWNSTRIKE ANIMATIONS)
+   -------------------------------------------------------------------------- */
+
+/* Golpe Izquierdo Genérico hacia la Caja */
+.left-stick.strike {
+  transform: translateY(-55px) rotate(14deg) scale(0.92) !important;
+}
+
+/* Golpe Izquierdo hacia el Hi-Hat (Extremo izquierdo) */
+.left-stick.strike-hihat {
+  transform: translate(-100px, -90px) rotate(38deg) scale(0.9) !important;
+}
+
+/* Golpe Izquierdo hacia Crash */
+.left-stick.strike-crash {
+  transform: translate(-80px, -140px) rotate(32deg) scale(0.88) !important;
+}
+
+/* Golpe Derecho Genérico hacia Tom / Floor Tom */
+.right-stick.strike {
+  transform: translateY(-55px) rotate(-14deg) scale(0.92) !important;
+}
+
+/* Golpe Derecho hacia Ride Cymbal */
+.right-stick.strike-ride {
+  transform: translate(110px, -110px) rotate(-38deg) scale(0.9) !important;
+}
+
+/* Golpe Derecho hacia High Tom */
+.right-stick.strike-tom {
+  transform: translate(-90px, -110px) rotate(-18deg) scale(0.9) !important;
+}
+
+/* Golpe Derecho hacia Floor Tom */
+.right-stick.strike-floor {
+  transform: translate(60px, -45px) rotate(-22deg) scale(0.92) !important;
+}
+
+/* ==========================================================================
+   FOOTER CON ATAJOS VINTAGE
+   ========================================================================== */
+.app-footer {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #dfcdb3;
+}
+
+.shortcuts-list {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.shortcut-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #bfa382;
+  background: rgba(16, 10, 6, 0.6);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.shortcut-item kbd {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1a1005;
+  background: linear-gradient(135deg, #f7d277 0%, #cf9c27 100%);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* ==========================================================================
+   RESPONSIVIDAD
+   ========================================================================== */
+@media (max-width: 1080px) {
+  .pov-stage {
+    height: 520px;
+  }
+  .left-stick {
+    left: 200px;
+  }
+  .right-stick {
+    right: 200px;
+  }
+}
+
+@media (max-width: 820px) {
+  .pov-stage {
+    height: 480px;
+    transform: scale(0.92);
+    transform-origin: top center;
+  }
+  .app-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .brand {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 580px) {
+  .pov-stage {
+    height: 420px;
+    transform: scale(0.78);
+    transform-origin: top center;
+  }
+  .drumstick {
+    display: none; /* En móviles táctiles se ocultan las baquetas para dejar ver los tambores */
+  }
+}

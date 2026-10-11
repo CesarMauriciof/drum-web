@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vintage Jazz Drums | Batería Acústica POV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Atmósfera de Jazz Club: Luces cálidas y focos de escenario -->
+  <div class="stage-spotlight"></div>
+  <div class="stage-ambient-warmth"></div>
+  <div class="stage-vignette"></div>
+
+  <main class="app-container">
+    <!-- Header estilo Jazz Lounge / Vintage -->
+    <header class="app-header brass-panel">
+      <div class="brand">
+        <div class="brand-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 3v18M3 12h18"/>
+            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">JAZZ <span class="gold-text">BEATS</span></h1>
+          <p class="brand-subtitle">Vintage 1960s Drumkit • Perspectiva Baterista (POV)</p>
+        </div>
+      </div>
+
+      <!-- Analizador de Audio estilo Ecualizador de Tubos / Ámbar -->
+      <div class="header-center">
+        <div class="visualizer-wrapper brass-panel-inset">
+          <canvas id="audioVisualizer" width="260" height="42"></canvas>
+          <div class="visualizer-label">WARM TUBE SPECTRUM</div>
+        </div>
+      </div>
+
+      <!-- Controles Superiores -->
+      <div class="header-controls">
+        <div class="control-group brass-panel-inset">
+          <span class="control-label" id="volumeIcon">🔊</span>
+          <label for="masterVolume" class="sr-only">Volumen Maestro</label>
+          <input type="range" id="masterVolume" min="0" max="1" step="0.01" value="0.8" title="Volumen maestro">
+          <span class="volume-value" id="volumeValue">80%</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Barra de Estado / Placa de latón vintage -->
+    <section class="status-bar">
+      <div class="status-indicator">
+        <span class="status-bulb"></span>
+        <button id="latencyBadge" class="latency-btn" title="Motor Web Audio nativo sin latencia">
+          ⚡ Modo Zero-Delay: <span class="badge-status">Activo (0ms)</span>
+        </button>
+      </div>
+      <div class="last-hit-badge" id="lastHitBadge">
+        <span class="last-hit-label">Último Golpe:</span>
+        <span class="last-hit-name" id="lastHitName">—</span>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         ESCENARIO POV DEL BATERISTA (PERSPECTIVA 2.5D EN ARCO REAL)
+         ==================================================================== -->
+    <div class="pov-stage" id="povStage">
+      <!-- Piso de madera de club de jazz con reflejos -->
+      <div class="stage-floor"></div>
+
+      <!-- KIT DE BATERÍA DISTRIBUIDO EN PERSPECTIVA -->
+      <div class="drum-kit-layout">
+
+        <!-- 1. CRASH CYMBAL (Arriba Izquierda) -->
+        <div class="drum-piece cymbal crash-cymbal" id="pad-crash" data-sound="crash" data-key="KeyC" data-hand="left" style="--hit-glow: #e6a13c;">
+          <div class="cymbal-bell"></div>
+          <div class="cymbal-ridges"></div>
+          <div class="piece-label">
+            <span class="label-name">Crash</span>
+            <kbd class="key-badge">C</kbd>
+          </div>
+          <div class="cymbal-stand"></div>
+        </div>
+
+        <!-- 2. HI-HAT CERRADO (Lateral Izquierdo) -->
+        <div class="drum-piece cymbal hihat-closed-cymbal" id="pad-hihat-closed" data-sound="hihat-closed" data-key="KeyH" data-hand="left" style="--hit-glow: #f0c05a;">
+          <div class="cymbal-bell"></div>
+          <div class="cymbal-ridges"></div>
+          <div class="piece-label">
+            <span class="label-name">Hi-Hat</span>
+            <kbd class="key-badge">H</kbd>
+          </div>
+          <div class="hihat-stand-rod"></div>
+        </div>
+
+        <!-- 3. HI-HAT ABIERTO (Al lado del Hi-Hat) -->
+        <div class="drum-piece cymbal hihat-open-cymbal" id="pad-hihat-open" data-sound="hihat-open" data-key="KeyY" data-hand="left" style="--hit-glow: #ffd678;">
+          <div class="cymbal-bell"></div>
+          <div class="cymbal-ridges"></div>
+          <div class="piece-label">
+            <span class="label-name">Open Hat</span>
+            <kbd class="key-badge">Y</kbd>
+          </div>
+        </div>
+
+        <!-- 4. RACK TOM (Centro-Superior sobre el Bombo) -->
+        <div class="drum-piece drum-drum tom-high-drum" id="pad-tom-high" data-sound="tom-high" data-key="KeyT" data-hand="right" style="--hit-glow: #d97824;">
+          <div class="drum-hoop">
+            <div class="drum-head">
+              <div class="drum-badge-vintage">LUDWIG</div>
+            </div>
+          </div>
+          <div class="piece-label">
+            <span class="label-name">High Tom</span>
+            <kbd class="key-badge">T</kbd>
+          </div>
+          <div class="lug-bolt bolt-top"></div>
+          <div class="lug-bolt bolt-bottom"></div>
+        </div>
+
+        <!-- 5. RIDE CYMBAL (Arriba Derecha) -->
+        <div class="drum-piece cymbal ride-cymbal" id="pad-ride" data-sound="ride" data-key="KeyR" data-hand="right" style="--hit-glow: #f5b041;">
+          <div class="cymbal-bell big-bell"></div>
+          <div class="cymbal-ridges"></div>
+          <div class="piece-label">
+            <span class="label-name">Ride</span>
+            <kbd class="key-badge">R</kbd>
+          </div>
+          <div class="cymbal-stand"></div>
+        </div>
+
+        <!-- 6. BOMBO / BASS DRUM (Centro Fondo - Pie) -->
+        <div class="drum-piece drum-drum kick-drum" id="pad-kick" data-sound="kick" data-key="Space" data-alt-key="KeyB" data-hand="foot" style="--hit-glow: #ff9d3b;">
+          <div class="kick-wood-hoop">
+            <div class="kick-head">
+              <div class="kick-logo">
+                <span class="logo-sub">Custom Vintage</span>
+                <span class="logo-main">GENE KRUPA</span>
+                <span class="logo-sub">CHICAGO</span>
+              </div>
+            </div>
+          </div>
+          <div class="piece-label kick-label">
+            <span class="label-name">Bombo (Kick)</span>
+            <div class="kick-keys">
+              <kbd class="key-badge">Espacio</kbd>
+              <span class="key-divider">/</span>
+              <kbd class="key-badge">B</kbd>
+            </div>
+          </div>
+          
+          <!-- Pedal de Bombo con Maza mecánica móvil -->
+          <div class="kick-pedal-mechanism" id="kickPedal">
+            <div class="pedal-beater" id="pedalBeater"></div>
+            <div class="pedal-footboard" id="pedalFootboard">
+              <span class="pedal-grooves"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. CAJA / SNARE DRUM (Centro Inferior - En frente del baterista) -->
+        <div class="drum-piece drum-drum snare-drum" id="pad-snare" data-sound="snare" data-key="KeyS" data-hand="left" style="--hit-glow: #e65c00;">
+          <div class="drum-hoop snare-hoop">
+            <div class="drum-head snare-head">
+              <div class="snare-center-ring"></div>
+              <div class="drum-badge-vintage">SNARE 14"</div>
+            </div>
+          </div>
+          <div class="piece-label">
+            <span class="label-name">Caja (Snare)</span>
+            <kbd class="key-badge">S</kbd>
+          </div>
+          <div class="lug-bolt bolt-left"></div>
+          <div class="lug-bolt bolt-right"></div>
+        </div>
+
+        <!-- 8. FLOOR TOM (Derecha Abajo) -->
+        <div class="drum-piece drum-drum tom-low-drum" id="pad-tom-low" data-sound="tom-low" data-key="KeyG" data-hand="right" style="--hit-glow: #cc5814;">
+          <div class="drum-hoop">
+            <div class="drum-head">
+              <div class="drum-badge-vintage">FLOOR 16"</div>
+            </div>
+          </div>
+          <div class="piece-label">
+            <span class="label-name">Floor Tom</span>
+            <kbd class="key-badge">G</kbd>
+          </div>
+          <div class="lug-bolt bolt-left"></div>
+          <div class="lug-bolt bolt-right"></div>
+        </div>
+
+      </div>
+
+      <!-- ==================================================================
+           BAQUETAS FLOTANTES POV (DRUMSTICKS DEL BATERISTA)
+           ================================================================== -->
+      <div class="drumsticks-layer">
+        <!-- Baqueta Izquierda (Para Hi-Hats, Snare, platillos de la izquierda) -->
+        <div class="drumstick left-stick" id="leftStick">
+          <div class="stick-tip"></div>
+          <div class="stick-shoulder"></div>
+          <div class="stick-shaft"></div>
+          <div class="stick-butt"></div>
+          <div class="stick-shadow"></div>
+        </div>
+
+        <!-- Baqueta Derecha (Para Toms, Crash, Ride, Floor Tom) -->
+        <div class="drumstick right-stick" id="rightStick">
+          <div class="stick-tip"></div>
+          <div class="stick-shoulder"></div>
+          <div class="stick-shaft"></div>
+          <div class="stick-butt"></div>
+          <div class="stick-shadow"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra Inferior de Atajos Retro -->
+    <footer class="app-footer brass-panel">
+      <div class="footer-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"/>
+        </svg>
+        <span>Mapeo del Kit:</span>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-item"><kbd>Espacio</kbd>/<kbd>B</kbd> Bombo</span>
+        <span class="shortcut-item"><kbd>S</kbd> Caja (Snare)</span>
+        <span class="shortcut-item"><kbd>H</kbd> Hi-Hat</span>
+        <span class="shortcut-item"><kbd>Y</kbd> Open Hat</span>
+        <span class="shortcut-item"><kbd>T</kbd> High Tom</span>
+        <span class="shortcut-item"><kbd>G</kbd> Floor Tom</span>
+        <span class="shortcut-item"><kbd>C</kbd> Crash</span>
+        <span class="shortcut-item"><kbd>R</kbd> Ride</span>
+      </div>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
