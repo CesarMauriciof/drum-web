@@ -28,6 +28,8 @@ Construida íntegramente con tecnologías nativas del navegador, incorpora un mo
   - **Polifonía Ilimitada:** Múltiples piezas pueden sonar simultáneamente en el mismo milisegundo sin cortes ni retraso en el *event loop*.
 - **🛡️ Prevención de Ráfagas por Tecla Mantenida:**
   Implementación estricta con `Set` de teclas activas y flag `event.repeat` para garantizar exactamente **un solo golpe sonoro por cada pulsación física**.
+- **🎹 Mapeo de Teclas Totalmente Personalizable:**
+  Panel de configuración integrado para reasignar **cualquier control a la tecla que prefieras**. Incluye detección de conflictos con intercambio automático, restablecimiento a los valores por defecto y **persistencia automática en `localStorage`**, por lo que tu configuración se conserva entre visitas.
 - **🎷 Estética Vintage Jazz Club:**
   - Acabados en madera de caoba oscura barnizada y aros de latón dorado pulido.
   - Parches crema vintage estilo pergamino con insignias tipográficas clásicas.
@@ -40,9 +42,11 @@ Construida íntegramente con tecnologías nativas del navegador, incorpora un mo
 
 ## 🎹 Mapeo de Teclas e Instrumentos
 
+> Estas son las teclas **predeterminadas**. Todas se pueden reasignar desde el botón **«Mapeo de teclas»** del panel superior.
+
 | Instrumento | Tecla Asignada | Mano / Dispositivo | Característica Sonora |
 | :--- | :---: | :---: | :--- |
-| **Bombo (Bass Drum)** | <kbd>Espacio</kbd> o <kbd>B</kbd> | Pie (Pedal) | Sub-grave punchy 808 (150Hz &rarr; 0.01Hz) con transitorio de impacto |
+| **Bombo (Bass Drum)** | <kbd>Espacio</kbd> | Pie (Pedal) | Sub-grave punchy 808 (150Hz &rarr; 0.01Hz) con transitorio de impacto |
 | **Caja (Snare Drum)** | <kbd>S</kbd> | Mano Izquierda | Tono acústico triangular + bordonero de ruido blanco filtrado (0.2s) |
 | **Hi-Hat Cerrado** | <kbd>H</kbd> | Mano Izquierda | Ruido metálico de alta frecuencia filtrado a 7kHz con corte en 0.05s |
 | **Hi-Hat Abierto** | <kbd>Y</kbd> | Mano Izquierda | Timbre metálico brillante con decaimiento sostenido en 0.35s |
@@ -50,6 +54,17 @@ Construida íntegramente con tecnologías nativas del navegador, incorpora un mo
 | **Floor Tom (Tom Bajo)** | <kbd>G</kbd> | Mano Derecha | Seno grave profundo (120Hz &rarr; 25Hz) con decaimiento de 0.4s |
 | **Platillo Crash** | <kbd>C</kbd> | Mano Izquierda | Ruido blanco filtrado a 3kHz con caída expansiva de 1.2s |
 | **Platillo Ride** | <kbd>R</kbd> | Mano Derecha | Doble oscilador inarmónico de campana (587Hz + 845Hz) |
+
+### 🎛️ Cómo personalizar el mapeo
+
+1. Pulsa el botón **⌨ Mapeo de teclas** en la esquina superior derecha.
+2. En la fila del instrumento que quieras cambiar, pulsa **Cambiar**.
+3. Pulsa la tecla que desees usar (por ejemplo `A`, `1`, `Flecha Arriba`, `,`…). La asignación se aplica al instante.
+4. Si la tecla ya estaba asignada a otro instrumento, **los controles se intercambian** automáticamente para evitar duplicados.
+5. Pulsa **Listo** para cerrar. El mapeo se guarda solo en el navegador y se mantiene la próxima vez que abras la página.
+6. Usa **Restablecer** para volver a las teclas predeterminadas.
+
+> Mientras el panel está abierto los sonidos quedan en pausa. Pulsa `Esc` para cancelar una captura o cerrar el panel. Las teclas modificadoras (Shift, Ctrl, Alt, Meta, Caps Lock) y `Esc` no se pueden asignar como disparadores.
 
 ---
 

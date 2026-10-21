@@ -393,7 +393,157 @@
   }
 
   // ---------------------------------------------------------------------------
-  // 5. CONTROLADOR DE LA INTERFAZ Y EVENTOS DE TECLADO (ZERO-DELAY)
+  // 5. MAPEO DE TECLAS PERSONALIZABLE (PERSISTENCIA EN EL NAVEGADOR)
+  // ---------------------------------------------------------------------------
+  const BINDINGS_STORAGE_KEY = 'jazz-drums-keybindings-v1';
+
+  // Mapeo predeterminado: soundId -> KeyboardEvent.code
+  const DEFAULT_BINDINGS = Object.freeze({
+    'kick': 'Space',
+    'snare': 'KeyS',
+    'hihat-closed': 'KeyH',
+    'hihat-open': 'KeyY',
+    'tom-high': 'KeyT',
+    'tom-low': 'KeyG',
+    'crash': 'KeyC',
+    'ride': 'KeyR'
+  });
+
+  // Orden de presentación en el panel de mapeo
+  const SOUND_ORDER = [
+    'kick',
+    'snare',
+    'hihat-closed',
+    'hihat-open',
+    'tom-high',
+    'tom-low',
+    'crash',
+    'ride'
+  ];
+
+  // Etiquetas legibles para las teclas más habituales
+  const KEY_LABELS = {
+    Space: 'Espacio',
+    Escape: 'Esc',
+    Enter: 'Enter',
+    NumpadEnter: 'Enter',
+    Backspace: '⌫',
+    Delete: 'Supr',
+    Tab: 'Tab',
+    ArrowUp: '↑',
+    ArrowDown: '↓',
+    ArrowLeft: '←',
+    ArrowRight: '→',
+    ShiftLeft: 'Shift Izq',
+    ShiftRight: 'Shift Der',
+    ControlLeft: 'Ctrl Izq',
+    ControlRight: 'Ctrl Der',
+    AltLeft: 'Alt Izq',
+    AltRight: 'Alt Der',
+    MetaLeft: 'Meta Izq',
+    MetaRight: 'Meta Der',
+    CapsLock: 'Caps',
+    Backquote: '`',
+    Minus: '-',
+    Equal: '=',
+    BracketLeft: '[',
+    BracketRight: ']',
+    Backslash: '\\',
+    Semicolon: ';',
+    Quote: "'",
+    Comma: ',',
+    Period: '.',
+    Slash: '/',
+    NumpadAdd: '+',
+    NumpadSubtract: '-',
+    NumpadMultiply: '*',
+    NumpadDivide: '/',
+    NumpadDecimal: '.'
+  };
+
+  // Teclas modificadoras que no tienen sentido como disparador
+  const MODIFIER_CODES = new Set([
+    'ShiftLeft', 'ShiftRight',
+    'ControlLeft', 'ControlRight',
+    'AltLeft', 'AltRight',
+    'MetaLeft', 'MetaRight',
+    'CapsLock', 'Escape'
+  ]);
+
+  /**
+   * Devuelve una etiqueta corta y legible para un KeyboardEvent.code
+   */
+  function formatKeyCode(code) {
+    if (!code) return '—';
+    if (KEY_LABELS[code]) return KEY_LABELS[code];
+    if (/^Key[A-Z]$/.test(code)) return code.slice(3);
+    if (/^Digit[0-9]$/.test(code)) return code.slice(5);
+    if (/^Numpad[0-9]$/.test(code)) return `Num ${code.slice(6)}`;
+    if (/^F[0-9]{1,2}$/.test(code)) return code;
+    return code;
+  }
+
+  /**
+   * Normaliza el código de una tecla, con fallback para navegadores
+   * o teclados virtuales que no exponen event.code.
+   */
+  function normalizeEventCode(event) {
+    if (event.code) return event.code;
+    const key = event.key;
+    if (!key) return '';
+    if (key === ' ') return 'Space';
+    if (key === 'Esc') return 'Escape';
+    if (/^[a-zA-Z]$/.test(key)) return `Key${key.toUpperCase()}`;
+    if (/^[0-9]$/.test(key)) return `Digit${key}`;
+    return key;
+  }
+
+  /**
+   * Carga el mapeo guardado y lo combina con los valores por defecto.
+   * Si hay colisiones (datos antiguos o corruptos), las resuelve intercambiando.
+   */
+  function loadBindings() {
+    const bindings = { ...DEFAULT_BINDINGS };
+    let stored = null;
+
+    try {
+      const raw = localStorage.getItem(BINDINGS_STORAGE_KEY);
+      if (raw) stored = JSON.parse(raw);
+    } catch (err) {
+      stored = null;
+    }
+
+    if (stored && typeof stored === 'object') {
+      Object.keys(DEFAULT_BINDINGS).forEach((soundId) => {
+        const candidate = stored[soundId];
+        if (typeof candidate !== 'string' || !candidate) return;
+
+        const holderId = Object.keys(bindings).find(
+          (id) => id !== soundId && bindings[id] === candidate
+        );
+        const previous = bindings[soundId];
+
+        bindings[soundId] = candidate;
+        if (holderId) bindings[holderId] = previous;
+      });
+    }
+
+    return bindings;
+  }
+
+  /**
+   * Guarda el mapeo actual (silenciosamente si localStorage no está disponible)
+   */
+  function saveBindings(bindings) {
+    try {
+      localStorage.setItem(BINDINGS_STORAGE_KEY, JSON.stringify(bindings));
+    } catch (err) {
+      // file:// o modo privado pueden bloquear localStorage: se ignora
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // 6. CONTROLADOR DE LA INTERFAZ Y EVENTOS DE TECLADO (ZERO-DELAY)
   // ---------------------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', () => {
     const drumPieces = Array.from(document.querySelectorAll('.drum-piece'));
@@ -408,33 +558,211 @@
     leftStickEl = document.getElementById('leftStick');
     rightStickEl = document.getElementById('rightStick');
 
-    // Mapeo O(1) de teclas a elementos DOM
-    const keyMap = new Map();
+    // -------------------------------------------------------------------------
+    // MAPEO DE TECLAS PERSONALIZABLE: ESTADO, PERSISTENCIA Y UI
+    // -------------------------------------------------------------------------
+    const keyMapBtn = document.getElementById('keyMapBtn');
+    const keymapOverlay = document.getElementById('keymapOverlay');
+    const keymapList = document.getElementById('keymapList');
+    const keymapClose = document.getElementById('keymapClose');
+    const keymapDone = document.getElementById('keymapDone');
+    const keymapReset = document.getElementById('keymapReset');
+    const keymapNote = document.getElementById('keymapNote');
+
+    const bindings = loadBindings();
+    const piecesBySound = new Map();
+    const rowBySound = new Map();
+    let keyMap = new Map();
+    let keymapOpen = false;
+    let captureSoundId = null;
+    let noteTimeout = null;
+
     drumPieces.forEach((piece) => {
-      const code = piece.dataset.key;
-      const altCode = piece.dataset.altKey;
-      if (code) keyMap.set(code, piece);
-      if (altCode) keyMap.set(altCode, piece);
+      piecesBySound.set(piece.dataset.sound, piece);
     });
 
-    // Mapeos por letra (insensible a mayúsculas/minúsculas)
-    keyMap.set(' ', keyMap.get('Space'));
-    keyMap.set('b', keyMap.get('Space'));
-    keyMap.set('B', keyMap.get('Space'));
-    keyMap.set('s', keyMap.get('KeyS'));
-    keyMap.set('S', keyMap.get('KeyS'));
-    keyMap.set('h', keyMap.get('KeyH'));
-    keyMap.set('H', keyMap.get('KeyH'));
-    keyMap.set('y', keyMap.get('KeyY'));
-    keyMap.set('Y', keyMap.get('KeyY'));
-    keyMap.set('t', keyMap.get('KeyT'));
-    keyMap.set('T', keyMap.get('KeyT'));
-    keyMap.set('g', keyMap.get('KeyG'));
-    keyMap.set('G', keyMap.get('KeyG'));
-    keyMap.set('c', keyMap.get('KeyC'));
-    keyMap.set('C', keyMap.get('KeyC'));
-    keyMap.set('r', keyMap.get('KeyR'));
-    keyMap.set('R', keyMap.get('KeyR'));
+    function soundName(soundId) {
+      const piece = piecesBySound.get(soundId);
+      return piece?.querySelector('.label-name')?.textContent?.trim() || soundId;
+    }
+
+    // Reconstruye el índice O(1) tecla -> pieza a partir del mapeo actual
+    function rebuildKeyMap() {
+      keyMap = new Map();
+      Object.keys(bindings).forEach((soundId) => {
+        const piece = piecesBySound.get(soundId);
+        if (piece && bindings[soundId]) keyMap.set(bindings[soundId], piece);
+      });
+    }
+
+    function buildKeymapRows() {
+      rowBySound.clear();
+      keymapList.innerHTML = '';
+
+      SOUND_ORDER.forEach((soundId) => {
+        const piece = piecesBySound.get(soundId);
+        if (!piece) return;
+
+        const row = document.createElement('div');
+        row.className = 'keymap-row';
+        row.dataset.sound = soundId;
+        row.style.setProperty(
+          '--row-accent',
+          piece.style.getPropertyValue('--hit-glow') || '#d4af37'
+        );
+
+        const name = document.createElement('span');
+        name.className = 'keymap-row-name';
+        name.textContent = soundName(soundId);
+
+        const key = document.createElement('kbd');
+        key.className = 'keymap-row-key';
+
+        const changeBtn = document.createElement('button');
+        changeBtn.type = 'button';
+        changeBtn.className = 'keymap-change';
+        changeBtn.textContent = 'Cambiar';
+        changeBtn.addEventListener('click', () => startCapture(soundId));
+
+        row.append(name, key, changeBtn);
+        keymapList.appendChild(row);
+        rowBySound.set(soundId, { row, key, changeBtn });
+      });
+    }
+
+    // Sincroniza badges del kit, barra inferior y filas del modal
+    function syncBindingsUI() {
+      drumPieces.forEach((piece) => {
+        const soundId = piece.dataset.sound;
+        const code = bindings[soundId];
+        piece.dataset.key = code || '';
+
+        const badge = piece.querySelector('.key-badge');
+        if (badge) badge.textContent = formatKeyCode(code);
+
+        const rowEntry = rowBySound.get(soundId);
+        if (rowEntry && captureSoundId !== soundId) {
+          rowEntry.key.textContent = formatKeyCode(code);
+        }
+      });
+
+      document.querySelectorAll('.shortcut-item[data-sound]').forEach((item) => {
+        const kbd = item.querySelector('kbd');
+        if (kbd) kbd.textContent = formatKeyCode(bindings[item.dataset.sound]);
+      });
+
+      rebuildKeyMap();
+    }
+
+    function showNote(message) {
+      if (!keymapNote) return;
+      keymapNote.textContent = message;
+      clearTimeout(noteTimeout);
+      if (message) {
+        noteTimeout = setTimeout(() => {
+          keymapNote.textContent = '';
+        }, 3800);
+      }
+    }
+
+    function startCapture(soundId) {
+      captureSoundId = soundId;
+      rowBySound.forEach((entry, id) => {
+        const listening = id === soundId;
+        entry.row.classList.toggle('listening', listening);
+        entry.changeBtn.textContent = listening ? 'Esperando…' : 'Cambiar';
+        entry.key.textContent = listening ? '…' : formatKeyCode(bindings[id]);
+      });
+      showNote(`Pulsa una tecla para «${soundName(soundId)}» · Esc para cancelar`);
+    }
+
+    function stopCapture() {
+      captureSoundId = null;
+      rowBySound.forEach((entry, id) => {
+        entry.row.classList.remove('listening');
+        entry.changeBtn.textContent = 'Cambiar';
+        entry.key.textContent = formatKeyCode(bindings[id]);
+      });
+    }
+
+    // Asigna una tecla; si ya estaba en uso, intercambia ambos controles
+    function assignBinding(soundId, code) {
+      const previous = bindings[soundId];
+
+      if (code === previous) {
+        stopCapture();
+        showNote(`«${soundName(soundId)}» ya usa ${formatKeyCode(code)}.`);
+        return;
+      }
+
+      const holderId = Object.keys(bindings).find(
+        (id) => id !== soundId && bindings[id] === code
+      );
+
+      bindings[soundId] = code;
+      if (holderId) bindings[holderId] = previous;
+
+      saveBindings(bindings);
+      stopCapture();
+      syncBindingsUI();
+
+      if (holderId) {
+        showNote(
+          `«${soundName(soundId)}» → ${formatKeyCode(code)} · ` +
+          `«${soundName(holderId)}» recibió ${formatKeyCode(previous)} (intercambiadas).`
+        );
+      } else {
+        showNote(`«${soundName(soundId)}» ahora se toca con ${formatKeyCode(code)}.`);
+      }
+    }
+
+    function resetBindings() {
+      Object.keys(DEFAULT_BINDINGS).forEach((soundId) => {
+        bindings[soundId] = DEFAULT_BINDINGS[soundId];
+      });
+      saveBindings(bindings);
+      stopCapture();
+      syncBindingsUI();
+      showNote('Mapeo predeterminado restablecido.');
+    }
+
+    function openKeymap() {
+      if (keymapOpen) return;
+      keymapOpen = true;
+
+      // Evitar estados "pegados" si se abre el panel con una tecla mantenida
+      activeKeys.clear();
+      drumPieces.forEach((p) => p.classList.remove('hit'));
+
+      keymapOverlay.hidden = false;
+      document.body.classList.add('keymap-open');
+      requestAnimationFrame(() => keymapOverlay.classList.add('open'));
+      keymapClose.focus();
+      showNote('');
+    }
+
+    function closeKeymap() {
+      if (!keymapOpen) return;
+      keymapOpen = false;
+      stopCapture();
+      keymapOverlay.classList.remove('open');
+      document.body.classList.remove('keymap-open');
+      setTimeout(() => {
+        if (!keymapOpen) keymapOverlay.hidden = true;
+      }, 180);
+      if (keyMapBtn) keyMapBtn.focus();
+    }
+
+    buildKeymapRows();
+    syncBindingsUI();
+
+    keyMapBtn?.addEventListener('click', openKeymap);
+    keymapClose?.addEventListener('click', closeKeymap);
+    keymapDone?.addEventListener('click', closeKeymap);
+    keymapReset?.addEventListener('click', resetBindings);
+    keymapOverlay?.addEventListener('pointerdown', (event) => {
+      if (event.target === keymapOverlay) closeKeymap();
+    });
 
     function updateVisualFeedback(piece) {
       const pieceName = piece.querySelector('.label-name')?.textContent || piece.dataset.sound;
@@ -478,8 +806,45 @@
     window.addEventListener(
       'keydown',
       (e) => {
-        // Prevenir scroll en la barra espaciadora
-        if (e.code === 'Space' || e.key === ' ') {
+        // 1. CAPTURA DE UNA NUEVA TECLA DESDE EL MODAL DE MAPEO
+        if (captureSoundId) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          if (e.code === 'Escape' || e.key === 'Escape') {
+            stopCapture();
+            showNote('Asignación cancelada.');
+            return;
+          }
+
+          const capturedCode = normalizeEventCode(e);
+          if (!capturedCode || MODIFIER_CODES.has(capturedCode)) {
+            showNote('Esa tecla no se puede asignar. Prueba con otra.');
+            return;
+          }
+
+          assignBinding(captureSoundId, capturedCode);
+          return;
+        }
+
+        // 2. CON EL MODAL ABIERTO SOLO SE PERMITE CERRAR CON ESCAPE
+        if (keymapOpen) {
+          if (e.code === 'Escape' || e.key === 'Escape') {
+            e.preventDefault();
+            closeKeymap();
+          }
+          return;
+        }
+
+        // 3. NO INTERCEPTAR ATAJOS DEL NAVEGADOR (Ctrl/Alt/Meta + tecla)
+        if (e.ctrlKey || e.altKey || e.metaKey) {
+          return;
+        }
+
+        const keyId = normalizeEventCode(e);
+
+        // Prevenir scroll/acciones por defecto de las teclas mapeadas
+        if (keyMap.has(keyId)) {
           e.preventDefault();
         }
 
@@ -489,7 +854,6 @@
         }
 
         // Ignorar si event.repeat es true o si la tecla ya está en el Set de activas
-        const keyId = e.code || e.key;
         if (e.repeat || activeKeys.has(keyId)) {
           return;
         }
@@ -498,7 +862,7 @@
         activeKeys.add(keyId);
 
         // Disparar golpe
-        const piece = keyMap.get(e.code) || keyMap.get(e.key);
+        const piece = keyMap.get(keyId);
         if (piece) {
           triggerHit(piece);
         }
@@ -509,10 +873,12 @@
     window.addEventListener(
       'keyup',
       (e) => {
-        const keyId = e.code || e.key;
+        if (captureSoundId || keymapOpen) return;
+
+        const keyId = normalizeEventCode(e);
         activeKeys.delete(keyId);
 
-        const piece = keyMap.get(e.code) || keyMap.get(e.key);
+        const piece = keyMap.get(keyId);
         if (piece) {
           piece.classList.remove('hit');
         }

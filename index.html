@@ -42,6 +42,11 @@
 
       <!-- Controles Superiores -->
       <div class="header-controls">
+        <button type="button" class="mapping-btn" id="keyMapBtn" title="Configurar el mapeo de teclas">
+          <span class="mapping-icon" aria-hidden="true">⌨</span>
+          <span>Mapeo de teclas</span>
+        </button>
+
         <div class="control-group brass-panel-inset">
           <span class="control-label" id="volumeIcon">🔊</span>
           <label for="masterVolume" class="sr-only">Volumen Maestro</label>
@@ -134,7 +139,7 @@
         </div>
 
         <!-- 6. BOMBO / BASS DRUM (Centro Fondo - Pie) -->
-        <div class="drum-piece drum-drum kick-drum" id="pad-kick" data-sound="kick" data-key="Space" data-alt-key="KeyB" data-hand="foot" style="--hit-glow: #ff9d3b;">
+        <div class="drum-piece drum-drum kick-drum" id="pad-kick" data-sound="kick" data-key="Space" data-hand="foot" style="--hit-glow: #ff9d3b;">
           <div class="kick-wood-hoop">
             <div class="kick-head">
               <div class="kick-logo">
@@ -148,8 +153,6 @@
             <span class="label-name">Bombo (Kick)</span>
             <div class="kick-keys">
               <kbd class="key-badge">Espacio</kbd>
-              <span class="key-divider">/</span>
-              <kbd class="key-badge">B</kbd>
             </div>
           </div>
           
@@ -229,17 +232,42 @@
         <span>Mapeo del Kit:</span>
       </div>
       <div class="shortcuts-list">
-        <span class="shortcut-item"><kbd>Espacio</kbd>/<kbd>B</kbd> Bombo</span>
-        <span class="shortcut-item"><kbd>S</kbd> Caja (Snare)</span>
-        <span class="shortcut-item"><kbd>H</kbd> Hi-Hat</span>
-        <span class="shortcut-item"><kbd>Y</kbd> Open Hat</span>
-        <span class="shortcut-item"><kbd>T</kbd> High Tom</span>
-        <span class="shortcut-item"><kbd>G</kbd> Floor Tom</span>
-        <span class="shortcut-item"><kbd>C</kbd> Crash</span>
-        <span class="shortcut-item"><kbd>R</kbd> Ride</span>
+        <span class="shortcut-item" data-sound="kick"><kbd>Espacio</kbd> Bombo</span>
+        <span class="shortcut-item" data-sound="snare"><kbd>S</kbd> Caja (Snare)</span>
+        <span class="shortcut-item" data-sound="hihat-closed"><kbd>H</kbd> Hi-Hat</span>
+        <span class="shortcut-item" data-sound="hihat-open"><kbd>Y</kbd> Open Hat</span>
+        <span class="shortcut-item" data-sound="tom-high"><kbd>T</kbd> High Tom</span>
+        <span class="shortcut-item" data-sound="tom-low"><kbd>G</kbd> Floor Tom</span>
+        <span class="shortcut-item" data-sound="crash"><kbd>C</kbd> Crash</span>
+        <span class="shortcut-item" data-sound="ride"><kbd>R</kbd> Ride</span>
       </div>
     </footer>
   </main>
+
+  <!-- ======================================================================
+       MODAL DE MAPEO DE TECLAS PERSONALIZABLE
+       ====================================================================== -->
+  <div class="keymap-overlay" id="keymapOverlay" hidden>
+    <div class="keymap-modal brass-panel" role="dialog" aria-modal="true" aria-labelledby="keymapTitle">
+      <header class="keymap-head">
+        <div>
+          <h2 class="keymap-title" id="keymapTitle">Mapeo de teclas</h2>
+          <p class="keymap-subtitle">Haz clic en «Cambiar» y pulsa la tecla que quieras usar.</p>
+        </div>
+        <button type="button" class="keymap-close" id="keymapClose" aria-label="Cerrar panel de mapeo">✕</button>
+      </header>
+
+      <div class="keymap-list" id="keymapList"></div>
+
+      <p class="keymap-note" id="keymapNote" role="status" aria-live="polite"></p>
+
+      <footer class="keymap-foot">
+        <button type="button" class="keymap-reset" id="keymapReset">Restablecer</button>
+        <span class="keymap-hint">Se guarda automáticamente en este navegador</span>
+        <button type="button" class="keymap-done" id="keymapDone">Listo</button>
+      </footer>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
