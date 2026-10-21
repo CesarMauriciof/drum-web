@@ -10,6 +10,8 @@ Una experiencia web interactiva de **Batería Acústica en Perspectiva Primera P
 
 Construida íntegramente con tecnologías nativas del navegador, incorpora un motor de síntesis percusiva de **Ultra-Baja Latencia (0ms de ataque)** mediante la **Web Audio API** que permite tocar en perfecta sincronía rítmica sobre cualquier canción, tanto con el teclado de la computadora como con el ratón o pantalla táctil.
 
+<img width="1000" height="649" alt="{24950D6C-712A-448C-B4D9-7FE4C92B88FD}" src="https://github.com/user-attachments/assets/ff6a4642-69ca-48c1-b102-5965beb6c7ae" />
+
 ---
 
 ## ✨ Características Principales
